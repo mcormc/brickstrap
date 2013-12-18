@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<schema version="0.3">
+	<table name="btMason">
+		<field name="bID" type="I"><key /><unsigned /></field>
+		<field name="dummy" type="C" size="10"></field>
+	</table>
+	<table name="btMasonBrick">
+		<field name="bID" type="I"><unsigned /></field>
+		<field name="targetID" type="I"><unsigned /></field>
+		<field name="headline" type="C" size="255"></field>
+		<field name="subhead" type="X2"></field>
+		<field name="imageID" type="I"><unsigned /></field>
+		<field name="position" type="I"><unsigned /></field>
+	</table>
+</schema>
