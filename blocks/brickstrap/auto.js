@@ -1,22 +1,20 @@
-GridSitemapNode = function(targetID, title) {
-	GridBlockForm.addRow(targetID, title);
+brickNode = function(cID, cName) {
+	blockForm.addRow(cID, cName);
 }
 
-
-
-var GridBlockForm = {
+var blockForm = {
 
 	init: function(){},
 
 	addRowNewId: 0,
 
-	addRow: function(targetID, title) {
+	addRow: function(cID, cName) {
 		this.addRowNewId--; // negative counter - so it doesn't compete with existing rowIDs
 		var rowID = this.addRowNewId;
 		var templateHTML = $('#rowTemplateWrap .ccm-edit-row').html();
 		templateHTML = templateHTML.replace(/tempRowID/g, rowID);
-		templateHTML = templateHTML.replace(/tempTargetID/g, targetID);
-		templateHTML = templateHTML.replace(/tempTitle/g, title);
+		templateHTML = templateHTML.replace(/tempTarget/g, cID);
+		templateHTML = templateHTML.replace(/tempTitle/g, cName);
 		var newRow = document.createElement("div");
 		newRow.innerHTML = templateHTML;
 		newRow.id = 'ccm-edit-row-' + parseInt(rowID);
@@ -72,10 +70,10 @@ var GridBlockForm = {
 	validate: function() {
 		qIDs = this.serialize();
 		if (qIDs.length < 1){
-			ccm_addError(ccm_t('one-item-required'));
+			ccm_addError(ccm_t('brick-required'));
 		}
 		return false;
 	}
 }
 
-ccmValidateBlockForm = function() { return GridBlockForm.validate(); }
+ccmValidateBlockForm = function() { return blockForm.validate(); }
