@@ -1,8 +1,13 @@
 body,.strap{background:#f1f1f1 !important}.strap .jumbotron{background:#fff!important;-webkit-box-shadow:inset 0 -4px 9px rgba(0,0,0,.3);-moz-box-shadow:inset 0 -4px 9px rgba(0,0,0,.3);box-shadow:inset 0 -4px 9px rgba(0,0,0,.3)}/* clearfix: */.caller:before,.isotope:before,.caller:after,.isotope:after{display:table;content:" "}.caller:after,.isotope:after{clear:both}
 
+.btn-tag{color:#fff!important;background-color:#222;border-color:#111}
+.btn-tag:hover,.btn-tag:focus,.btn-tag:active,.btn-tag.active{background-color:#a00;border-color:#900}
+.btn-tag:active,.btn-tag.active{background-image:none}
+.btn-tag.disabled,.btn-tag[disabled],.btn-tag.disabled:hover,.btn-tag[disabled]:hover,.btn-tag.disabled:focus,.btn-tag[disabled]:focus,.btn-tag.disabled:active,.btn-tag[disabled]:active,.btn-tag.disabled.active,.btn-tag[disabled].active{background-color:#111;border-color:#000}
+
 .what {
   min-height: 20px;
-  padding: 9px;
+  padding: 19px;
   margin-top: 20px;
   margin-bottom: 20px;
   background-color: #fff;
@@ -104,7 +109,8 @@ body,.strap{background:#f1f1f1 !important}.strap .jumbotron{background:#fff!impo
   padding: 4px
 }
 
-.brick > div > img {
+.brick > div > img, .brick > div > a > img {
+  display: block;
   max-width: 100%;
   height: auto;
   margin-right: auto;
@@ -147,8 +153,6 @@ body,.strap{background:#f1f1f1 !important}.strap .jumbotron{background:#fff!impo
 .md-2{width:16.666666666666664%}
 .md-1{width:8.333333333333332%}
 --------------------------------- */
-
-
 
 
 
