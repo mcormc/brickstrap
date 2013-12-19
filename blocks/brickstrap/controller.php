@@ -1,8 +1,8 @@
 <?php  defined('C5_EXECUTE') or die("Access Denied.");
 
-class MasonBlockController extends BlockController {
+class BrickstrapBlockController extends BlockController {
 	
-	protected $btTable = 'btMason';
+	protected $btTable = 'btBrickstrap';
 	protected $btInterfaceWidth = "360";
 	protected $btInterfaceHeight = "480";
 	protected $btWrapperClass = 'ccm-ui';
@@ -13,11 +13,11 @@ class MasonBlockController extends BlockController {
 	// protected $btCacheBlockOutputLifetime = CACHE_LIFETIME;
 		
 	public function getBlockTypeName() {
-		return t("Mason");
+		return t("Brickstrap");
 	}
 
 	public function getBlockTypeDescription() {
-		return t('Custom navigation lays out pages with images and captions, thanks to Masonry.');
+		return t('Grid of responsive bricks lays out links to, and images and text from, single pages.');
 	}
 
 	public function solidify($text) {
@@ -26,7 +26,7 @@ class MasonBlockController extends BlockController {
 	}
 
 	public function getJavaScriptStrings() {
-		return array('one-item-required' => t('You must choose at least one item.'));
+		return array('brick-required' => t('Grid requires brick.'));
 	}
 
 	public function generateRandomString(){
@@ -38,45 +38,44 @@ class MasonBlockController extends BlockController {
 	}
 
 	function add() {
-		$this->setVariables();
-		$this->set('items', array());
+		$this->set('bricks', array());
 		$random = $this->generateRandomString();
 		$this->set('random',$random);
 	}
 	
 	function edit() {
-		$this->setVariables();
-		$items = $this->getItems();
-		$this->set('items', $items);
-		// $this->set('blockIdentifier',$this->getBlockObject()->getProxyBlock() ? $this->getBlockObject()->getProxyBlock()->getInstance()->getIdentifier() : $this->getIdentifier());
+		$bricks = $this->getBricks();
+		$this->set('bricks', $bricks);
 	}
 
 	function view() {
-		$this->setVariables();
+
+		// $html = Loader::helper('html');
+		// $this->addHeaderItem($html->javascript('brickstrap.js', 'jockstrap'));
+
 		$nh = Loader::helper('navigation');
-		$currentPage = Page::getCurrentPage();
-		$currentCID = $currentPage->getCollectionID();
-		$currentCPath = $currentPage->getCollectionPath();
-		$itemRows = $this->getItems();
-		$itemObjs = array();
-		foreach ($itemRows as $row) {
-			// $item->targetID = $row['targetID'];
-			$page = Page::getByID($row['targetID']);
-			$itemCPath = $page->getCollectionPath();
-			$item = new stdClass;
-			$item->url = $nh->getLinkToCollection($page);
-			$item->position = $row['position'];
-			$item->headline = $row['headline'];
-			$item->subhead = $row['subhead'];
-			$item->imageID = $row['imageID'];
-			$item->cID = $row['targetID'];
-			$item->cPath = $itemCPath;
-			$item->isCurrent = ($currentCID === $row['targetID']);
-			$item->inPath = $this->isPageInPath($currentCPath, $itemCPath);
-			$item->cObj = $page;
-			$itemObjs[] = $item;
+		$current = Page::getCurrentPage();
+		$currentID = $current->getCollectionID();
+		$path = $current->getCollectionPath();
+		$rows = $this->getBricks();
+		$bricks = array();
+		foreach ($rows as $row) {
+			$target = Page::getByID($row['target']);
+			$page = $target->getCollectionPath();
+			$brick = new stdClass;
+			$brick->url = $nh->getLinkToCollection($target);
+			$brick->position = $row['position'];
+			$brick->title = $row['title'];
+			$brick->description = $row['description'];
+			$brick->image = $row['image'];
+			$brick->cID = $row['target'];
+			$brick->cPath = $page;
+			$brick->isCurrent = ($currentID === $row['target']);
+			$brick->inPath = $this->isPageInPath($path,$page);
+			$brick->target = $target;
+			$bricks[] = $brick;
 		}
-		$this->set('items', $itemObjs);
+		$this->set('bricks', $bricks);
 	}
 	//Internal utility function -- tells you if the first path is "under" the second path
 	// (meaning that the first path is equal to or begins with the second path).
@@ -99,52 +98,46 @@ class MasonBlockController extends BlockController {
 		}
 	}
 	
-	function getItems() {
+	function getBricks() {
 		$db = Loader::db();
-		$sql = 'SELECT * FROM btMasonBrick WHERE bID=' . intval($this->bID) . ' ORDER BY position';
+		$sql = 'SELECT * FROM btBricks WHERE bID=' . intval($this->bID) . ' ORDER BY position';
 		return $db->getAll($sql);
 	}	
 	
 	function delete(){
 		$db = Loader::db();
-		$db->query("DELETE FROM btMasonBrick WHERE bID=".intval($this->bID));		
+		$db->query("DELETE FROM btBricks WHERE bID=".intval($this->bID));		
 		parent::delete();
 	}
 
 	function duplicate($nbID) {
 		parent::duplicate($nbID);
-		$items = $this->getItems();
+		$bricks = $this->getBricks();
 		$db = Loader::db();
-		$sql = "INSERT INTO btMasonBrick (bID, targetID, headline, subhead, imageID, position)"
-		 	 . " SELECT ?, targetID, headline, subhead, imageID, position FROM btMasonBrick WHERE bID = ?";
+		$sql = "INSERT INTO btBricks (bID, target, title, description, image, position)"
+		 	 . " SELECT ?, target, title, description, image, position FROM btBricks WHERE bID = ?";
 		$vals = array($nbID, $this->bID);
 		$db->Execute($sql, $vals);
 	}
 	
 	function save($data) {
 		$db = Loader::db();
-		if(count($data['targetIDs']) ){
-			//delete existing items
-			$db->query("DELETE FROM btMasonBrick WHERE bID = ?", array($this->bID));
+		if(count($data['targets'])){
+			//delete existing bricks
+			$db->query("DELETE FROM btBricks WHERE bID = ?", array($this->bID));
 			
-			//loop through and add the items
+			//loop through and add the bricks
+			// $pos = 1;
 			$pos = 0;
-			foreach($data['targetIDs'] as $targetID){
-				// if(intval($targetID)==0 || $data['headlines'][$pos]=='tempHeadline' || $data['subheads'][$pos]=='tempSubhead' || $data['imageIDs'][$pos]=='tempImageID') continue;
-				if(intval($targetID)==0 || $data['headlines'][$pos]=='tempHeadline') continue;
-				$sql = "INSERT INTO btMasonBrick (bID, targetID, headline, imageID, subhead, position) values (?,?,?,?,?,?)";
-				$vals = array($this->bID, $targetID, $data['headlines'][$pos], $data['imageIDs'][$pos], $data['subheads'][$pos], $pos);
+			foreach($data['targets'] as $target){
+				if(intval($target) == 0 || $data['titles'][$pos] == 'tempTitle') continue;
+				$sql = "INSERT INTO btBricks (bID, target, title, image, description, position) values (?,?,?,?,?,?)";
+				$vals = array($this->bID, $target, $data['titles'][$pos], $data['images'][$pos], $data['descriptions'][$pos], $pos);
 				$db->Execute($sql, $vals);
 				$pos++;
 			}
 		}
 		parent::save($data);
-	}
-
-	private function setVariables(){
-		$th = Loader::helper('concrete/urls');
-		$bt = BlockType::getByHandle($this->btHandle);
-		$this->set ('action_ajax_fill_data', $th->getBlockTypeToolsURL($bt).'/action_ajax_fill_data');
 	}
 
 }
