@@ -1,56 +1,57 @@
 <?php  defined('C5_EXECUTE') or die("Access Denied.");
 
+Loader::model('attribute/categories/collection');
+
 $ak = CollectionAttributeKey::getByHandle('tags');
 $akc = $ak->getController();
 $pp = false;
 
-$tagCounts = array();
+$taggery = $akc->getOptionUsageArray($pp);
+$tags = array();
 
-if ($baseSearchPath != '') $pp = Page::getByPath($baseSearchPath);
-
-$bricklike = $akc->getOptionUsageArray($pp);
-$bricklike_tags = array();
-foreach($bricklike as $bl){
-	$tagCounts[] = $bl->getSelectAttributeOptionUsageCount();
-	$bricklike_tags[] = '<li class="brand" data-tags="'.$bl.'" data-uses="'.$bl->getSelectAttributeOptionUsageCount().'">'.$bl.'</li>';
+foreach($taggery as $tag){
+	// $tags[] = '<li class="brand" data-tags="'.$tag.'" data-uses="'.$tag->getSelectAttributeOptionUsageCount().'">'.$tag.'</li>';
+	$tags[] = $tag;
 }
-// shuffle($bricklike_tags); ?>
 
-<div class="what">
-<h1>Brickstrap, a prototype</h1>
-<p>Magical grid lets user customize navigation by filtering through responsive bricks, each of which promotes page and houses content, such as art and copy, selected by administrator during implementation and revision of block's instance. Package for concrete5's consideration runs on <a href="http://isotope.metafizzy.co/">Isotope</a>, <a href="http://masonry.desandro.com/">Masonry</a>, and <a href="http://getbootstrap.com/">Bootstrap 3</a>.</p>
-</div>
+// shuffle($tags);
+
+if (Page::getCurrentPage()->isEditMode()) echo '<div class="well">Content disabled in edit mode.</div>'; else { ?>
 
 <div id="filter" class="wrap">
 
-
 	<ol id="caller" class="caller">
-		<li><button type="button" name="filter" class="btn btn-info" value=".brick-sm">Thumbnail</button></li>
-		<li><button type="button" name="filter" class="btn btn-info" value=".brick-md">Text</button></li>
-		<li><button type="button" name="filter" class="btn btn-info" value=".brick-lg">Artwork</button></li>
-		<li><button type="button" name="filter" class="btn btn-primary" value="indoor">Inside</button></li>
-		<li><button type="button" name="filter" class="btn btn-primary" value="outdoor">Outside</button></li>
-		<li><button type="button" name="filter" class="btn btn-primary" value="critter">Animal</button></li>
-		<li><button type="button" name="filter" class="btn btn-warning" value="position">Position exceeds 5</button></li>
-		<li><button type="button" name="filter" class="btn btn-success" value="*">Reset</button></li>
+		<li><button type="button" name="filter" class="btn btn-sm btn-black" value=".brick-sm">Thumbnail</button></li>
+		<li><button type="button" name="filter" class="btn btn-sm btn-black" value=".brick-md">Text</button></li>
+		<li><button type="button" name="filter" class="btn btn-sm btn-black" value=".brick-lg">Artwork</button></li><?php  
+
+		for ($i = 0; $i < $taggery->count(); $i++) { if (($i+1) <= 4) { $akct = $tags[$i]; ?>
+
+		<li><button type="button" name="filter" class="btn btn-sm btn-black" value="<?php  echo $akct; ?>"><?php  echo $akct; ?></button></li><?php 
+
+		} } ?>
+
+		<li><button type="button" name="filter" class="btn btn-sm btn-black" value="position">Position exceeds 5</button></li>
+		<li><button type="button" name="filter" class="btn btn-sm btn-red" value="*">Reset</button></li>
 	</ol>
 
 
-	<div id="isotope" class="isotope">
+	<div id="brickstrap" class="isotope">
 
-		<div class="sizer"></div><?php  foreach ($items as $item) {
+		<div class="sizer"></div><?php  foreach ($bricks as $brick) {
 
-		$target = Page::getByID($item->cID);
+		$target = Page::getByID($brick->cID);
 		$keys = $target->getAttribute('tags');
-		$position = $item->position;
-		$headline = $item->headline;
-		$description = htmlentities($item->subhead, ENT_QUOTES, APP_CHARSET);
-		$link = $item->url;
+		$position = $brick->position;
+		if ($brick->title !== "") $title = $brick->title; else $title = $target->getCollectionName();
+		$description = htmlentities($brick->description, ENT_QUOTES, APP_CHARSET);
+		$link = $brick->url;
+		$image = $brick->image;
 		$thumbnail = $target->getBlocks('Thumbnail Image');
 
 		?>
 
-		<div class="brick <?php  if ($item->imageID) echo 'brick-lg'; elseif (is_object($thumbnail[0])) echo 'brick-sm'; else echo 'brick-md'; ?>" data-position="<?php
+		<div class="brick <?php  if ($image) echo 'brick-lg'; elseif (is_object($thumbnail[0])) echo 'brick-sm'; else echo 'brick-md'; ?>" data-position="<?php
 			echo $position; ?>" data-tags="<?php 
 
 				// echo htmlentities($keys, ENT_QUOTES, APP_CHARSET);
@@ -66,27 +67,26 @@ foreach($bricklike as $bl){
 
 
 			?>"><!-- <?php
-			echo t('Brick No. '); echo $item->position; ?> --><div>
-
+			echo t('Brick No. '); echo $position; ?> --><div>
 			<?php  
-			if ($item->imageID) { 
-				$f = File::getByID($item->imageID);
-				print '<img src="'.$f->getRelativePath().'" title="'.$f->getTitle().'" alt="'.$f->getTitle().'">';
+			if ($image) { 
+				$f = File::getByID($image);
+				if ($link !== "") print '<a href="'.$link.'">';
+				print '<img src="'.$f->getRelativePath().'" title="'.$title.'" alt="'.$f->getTitle().'">';
+				if ($link !== "") echo '</a>';
 			} elseif (is_object($thumbnail[0])) {
 				$instance = $thumbnail[0]->getInstance();
 				$thumb = $instance->getFileObject();
+				if ($link !== "") print '<a href="'.$link.'">';
 				if($thumb) print '<img src="'.$thumb->getRelativePath().'" alt="'.$thumb->getTitle().'">';
-			} // if (!$item->imageID && !is_object($thumbnail[0])) print '<p class="text-right"><a class="btn btn-xs" href="'.$item->url.'">Learn more</a></p>';
+				if ($link !== "") echo '</a>';
+			} // if (!$image && !is_object($thumbnail[0])) print '<p class="text-right"><a class="btn btn-xs" href="'.$link.'">Learn more</a></p>';
 
-			if ($headline !== "" || $description !== "") { ?>
+			if ($description !== "") { ?>
 
-			<div><?php  if ($headline !== "") { ?>
-
-				<h3><?php  if ($link !== "") print '<a href="'.$link.'">'; echo $headline; if ($link !== "") print '</a>'; ?></h3><?php  } 
-				if ($description !== "") { ?>
-
-				<p><?php  echo $description; ?></p><?php  } ?>
-
+			<div>
+				<h3><?php  if ($link !== "") print '<a href="'.$link.'">'; echo $title; if ($link !== "") print '</a>'; ?></h3>
+				<p><?php  echo $description; ?></p>
 			</div><?php  } ?>
 
 		</div></div><?php  } ?>
@@ -95,43 +95,34 @@ foreach($bricklike as $bl){
 
 </div>
 
-<script src="<?php  echo DIR_REL.'/js/imagesloaded.js'; ?>"></script>
-<script src="<?php  echo DIR_REL.'/js/isotope.js'; ?>"></script>
+<?php  
+// View::getInstance()->addFooterItem(Loader::helper('html')->javascript('brickstrap.js','brickstrap'));
+// View::getInstance()->addFooterItem('');
+
+print Loader::helper('html')->javascript('brickstrap.js','brickstrap'); ?>
 
 <script>
-
-	var $container = $("#isotope").imagesLoaded(function(){
-		$container.isotope({
+	var $box = $("#brickstrap").imagesLoaded(function(){
+		$box.isotope({
 			masonry: {columnWidth: ".sizer"},
 			itemSelector: ".brick",
 			isJQueryFiltering: true,
 			transitionDuration: "0.6s"
 		});
 	});
-
 	var filterFns = {
-		position: function() {
-			var name = $(this).attr("data-position");
-			return parseInt(name,10) > 5;
-		},
-		indoor: function() {
-			var name = $(this).attr("data-tags");
-			return name.match(/inside/); // show if tags include "outside"
-		},
-		outdoor: function() {
-			var name = $(this).attr("data-tags");
-			return name.match(/outside/); // show if tags include "outside"
-		},
-		critter: function() {
-			var name = $(this).attr("data-tags");
-			return name.match(/animal/); // show if tags include "animal"
-		}
+		position:function(){var number=$(this).attr("data-position");return parseInt(number,10)>5},<?php  
+
+		for ($i = 0; $i < $taggery->count(); $i++) { if (($i+1) <= 4) { $akct = $tags[$i]; ?>
+
+		<?php  echo $akct; ?>:function(){var tag=$(this).attr("data-tags");return tag.match(/<?php  echo $akct; ?>/)},<?php  }} ?>
+
 	};
-
-
 	$("#caller").on("click","button", function() {
 		var filtering = filterFns[this.value] || this.value;
-		$container.isotope({filter:filtering});
+		$box.isotope({filter:filtering});
 	});
 
 </script>
+
+<?php  } ?>
