@@ -15,19 +15,8 @@ $tags = $akc->getOptionUsageArray($pp); ?>
             <div class="page-header"><h2><?php echo $title; ?></h2></div>
             <div id="BRICKSTRAP<?php echo $bID; ?>" class="brickstrap">
                 <ul id="FILTER<?php echo $bID; ?>" class="filter">
-                    <li><button type="button" name="filter" class="btn btn-xs btn-default" value=".brick-md">Text</button></li>
-                    <li><button type="button" name="filter" class="btn btn-xs btn-default" value=".brick-lg">Artwork</button></li><?php 
-
-                    foreach($tags as $t) { ?>
-
-                    <li><button type="button" name="filter" class="btn btn-xs btn-default" data-id="<?php
-                                echo $t->getSelectAttributeOptionID(); // $akc->field('atSelectOptionID'); ?>" data-name="<?php
-                                echo $t->getSelectAttributeOptionValue(); ?>" data-uses="<?php
-                                echo $t->getSelectAttributeOptionUsageCount(); ?>"><?php
-                                echo $t->getSelectAttributeOptionValue(); ?></button></li><?php 
-
-                    } ?>
-
+                    <li><button type="button" name="filter" class="btn btn-xs btn-default" value=".brick-md">Text Only</button></li>
+                    <li><button type="button" name="filter" class="btn btn-xs btn-default" value=".brick-lg">Has Image</button></li>
                 </ul>
                 <div id="ISOTOPE<?php echo $bID; ?>" class="isotope">
                     <div class="sizer"></div><?php foreach ($items as $item) {
@@ -42,13 +31,7 @@ $tags = $akc->getOptionUsageArray($pp); ?>
                     // $thumbnail = $target->getBlocks('Thumbnail Image'); ?>
 
                     <div class="brick <?php 
-                        // if ($image) echo 'brick-lg'; else echo 'brick-md';
-                        if ($position == 1) echo 'brick-lg'; else echo 'brick-md'; ?>" data-position="<?php echo $position; ?>" data-tags="<?php 
-                                    if (!empty($keys)) {
-                                        $filters = array();
-                                        foreach($keys as $opt) $filters[] = $opt;
-                                        echo implode(', ',$filters);
-                                    } ?>"><!-- <?php echo t('Brick No. '); echo $position; ?> --><div>
+                        if ($image) echo 'brick-lg'; else echo 'brick-md'; ?>" data-position="<?php echo $position; ?>"><!-- <?php echo t('Brick No. '); echo $position; ?> --><div>
                         <?php
 
                         if ($image) { 
@@ -84,19 +67,11 @@ $tags = $akc->getOptionUsageArray($pp); ?>
                             transitionDuration: "0.6s"
                         });
                     });
-                    var tags = {
-                        position:function(){var number=$(this).attr("data-position");return parseInt(number,10)>5},<?php 
-
-                        foreach($tags as $t) { ?>
-
-                        <?php echo $t->getSelectAttributeOptionValue(); ?>:function(){var tag=$(this).attr("data-tags");return tag.match(/<?php
-                                    echo $t->getSelectAttributeOptionValue(); ?>/)},<?php 
-
-                        } ?>
-
+                    var filterOptions = {
+                        position:function(){var number=$(this).attr("data-position");return parseInt(number,10)>5},
                     };
-                    $(".filter").click(function() { // $(".filter").on("click", "button", function() {
-                        var filters = tags[this.value] || this.value;
+                    $(".filter").on("click", "button", function() {
+                        var filters = filterOptions[this.value] || this.value;
                         $box.isotope({filter:filters});
                     })
                 });
