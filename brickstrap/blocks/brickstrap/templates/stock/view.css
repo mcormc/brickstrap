@@ -1,0 +1,29 @@
+.vivid-carousel { margin: 1.2em 0 }
+    
+    .carousel-header-wrap { position: relative; min-height: 40px; margin-bottom: 10px; }
+    
+        .carousel-header-wrap h2 { margin-top: 0; }
+        .carousel-nav-button { cursor: pointer; border-radius: 50%; background: #eee; width: 40px; height: 40px; top: 0; position: absolute; text-align: center; line-height: 0; padding-top: 20px; font-size: 24px; -webkit-transition: .2 ease all; transition: .2s ease all; }
+        .carousel-nav-button:hover { background: #ddd; }
+        .carousel-nav-button.next { right: 0; }
+        .carousel-nav-button.prev { right: 50px; }
+        .carousel-nav-button.next:before{
+            content: ">";   
+        }
+        .carousel-nav-button.prev:before{
+            content: "<";         
+        }
+    
+    ul.carousel-item-container { padding: 0; overflow: hidden; }
+    
+        .carousel-overflow-wrap { width: 10000px; position: relative; transition: .2s ease all; }
+        
+            li.carousel-item { opacity: 0; list-style: none !important; float: left; -moz-box-sizing: border-box; box-sizing: border-box; -webkit-transition: .5s ease all; transition: .5s ease all; }
+            li.carousel-item.vis { opacity: 1; }
+            
+                li.carousel-item .item-inner { margin: 5px; }
+            
+                li.carousel-item img {  }
+                li.carousel-item h3 {  }
+                li.carousel-item .carousel-button { display: inline-block; background: #eee; border-radius: 1px solid #ccc; margin-top: 10px; text-decoration: none; color: #444 !important; padding: 6px 15px; border-radius: 3px; }
+                li.carousel-item .carousel-button:hover { background: #ddd; }
