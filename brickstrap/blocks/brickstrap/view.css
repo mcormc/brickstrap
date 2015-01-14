@@ -1,14 +1,6 @@
-
 /* clearfix: */
 .filter:before,.isotope:before,.filter:after,.isotope:after{display:table;content:" "}
 .filter:after,.isotope:after{clear:both}
-
-.btn-tag{color:#fff!important;background-color:#222;border-color:#111}
-.btn-tag:hover,.btn-tag:focus,.btn-tag:active,.btn-tag.active{background-color:#a00;border-color:#900}
-.btn-tag:active,.btn-tag.active{background-image:none}
-.btn-tag.disabled,.btn-tag[disabled],.btn-tag.disabled:hover,.btn-tag[disabled]:hover,.btn-tag.disabled:focus,.btn-tag[disabled]:focus,.btn-tag.disabled:active,.btn-tag[disabled]:active,.btn-tag.disabled.active,.btn-tag[disabled].active{background-color:#111;border-color:#000}
-
-
 
 /* list of filters 
 --------------------- */
@@ -28,13 +20,11 @@
   padding: 5px
 }
 
-
 /* grid 
 --------------------- */
 .isotope {
   margin: 0 auto
 }
-
 
 /* brick 
 --------------------- */
@@ -67,24 +57,6 @@
   .brick.brick-sm{width:160px}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .brick > div {
   position: relative;
   color: #222;
@@ -111,32 +83,6 @@
 .brick .number{}
 .brick .weight{}
 
-
 .brick.brick-md > div > div > h3 {
   margin-top: 0
 }
-
-
-
-
-
-
-
-
-
-
-/* fluid
-.sizer.sizer-fluid,.brick.brick-fluid{width:25%}
-
-.brick.brick-fluid-sm{width:25%}
-.brick.brick-fluid-md{width:50%}
-.brick.brick-fluid-lg{width:50%}
-
-.md-6{width:50%}
-.md-5{width:41.66666666666667%}
-.md-4{width:33.33333333333333%}
-.md-3{width:25%}
-.md-2{width:16.666666666666664%}
-.md-1{width:8.333333333333332%}
---------------------------------- */
-
